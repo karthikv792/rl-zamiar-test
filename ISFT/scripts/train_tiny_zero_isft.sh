@@ -43,7 +43,7 @@ python3 -m verl.trainer.main_isft \
     trainer.project_name='llm_fine_tuning'\
     trainer.experiment_name='AG-Countdown3_Qwen-0.5B_ISFT_LG_N5' \
     +trainer.val_before_train=False \
-    trainer.n_gpus_per_node=4 \
+    trainer.n_gpus_per_node=1 \
     trainer.nnodes=1 \
     trainer.save_freq=-1 \
     trainer.test_freq=50 \

@@ -37,7 +37,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
     algorithm.kl_ctrl.kl_coef=0.001 \
     trainer.critic_warmup=0 \
-    trainer.logger=['console'] \
+    trainer.logger=['console', 'wandb'] \
     trainer.project_name='llm_fine_tuning'\
     trainer.experiment_name='AG-Countdown3_Qwen-0.5B_GRPO_LG_N5' \
     +trainer.val_before_train=False \
