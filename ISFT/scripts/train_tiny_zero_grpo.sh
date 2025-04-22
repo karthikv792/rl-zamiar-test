@@ -8,7 +8,7 @@ countdown4_test_path=$HOME/data/countdown4/test.parquet
 train_files="['$countdown3_train_path']"
 test_files="['$countdown3_test_path', '$countdown4_test_path']"
 
-CUDA_VISIBLE_DEVICES=4,5,6,7 python3 -m verl.trainer.main_ppo \
+python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     data.train_files="$train_files" \
     data.val_files="$test_files" \
