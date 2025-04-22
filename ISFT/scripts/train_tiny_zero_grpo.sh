@@ -43,7 +43,7 @@ python3 -m verl.trainer.main_ppo \
     +trainer.val_before_train=False \
     trainer.n_gpus_per_node=4 \
     trainer.nnodes=1 \
-    trainer.save_freq=5 \
+    trainer.save_freq=-1 \
     trainer.test_freq=10 \
     +trainer.val_only=False \
     trainer.total_epochs=5 $@
