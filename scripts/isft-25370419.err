@@ -1,0 +1,71 @@
++ export VLLM_ATTENTION_BACKEND=XFORMERS
++ VLLM_ATTENTION_BACKEND=XFORMERS
++ export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
++ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
++ countdown3_train_path=/home/dkalwar/data/countdown3/train.parquet
++ countdown3_test_path=/home/dkalwar/data/countdown3/test.parquet
++ countdown4_test_path=/home/dkalwar/data/countdown4/test.parquet
++ train_files='['\''/home/dkalwar/data/countdown3/train.parquet'\'']'
++ test_files='['\''/home/dkalwar/data/countdown3/test.parquet'\'', '\''/home/dkalwar/data/countdown4/test.parquet'\'']'
++ export VLLM_ATTENTION_BACKEND=XFORMERS
++ VLLM_ATTENTION_BACKEND=XFORMERS
++ countdown3_train_path=/home/dkalwar/data/countdown3/train.parquet
++ countdown3_test_path=/home/dkalwar/data/countdown3/test.parquet
++ countdown4_test_path=/home/dkalwar/data/countdown4/test.parquet
++ train_files='['\''/home/dkalwar/data/countdown3/train.parquet'\'']'
++ test_files='['\''/home/dkalwar/data/countdown3/test.parquet'\'', '\''/home/dkalwar/data/countdown4/test.parquet'\'']'
++ CUDA_VISIBLE_DEVICES=2,3
++ CUDA_VISIBLE_DEVICES=0,1
++ -m verl.trainer.main_isft algorithm.adv_estimator=grpo 'data.train_files=['\''/home/dkalwar/data/countdown3/train.parquet'\'']' 'data.val_files=['\''/home/dkalwar/data/countdown3/test.parquet'\'', '\''/home/dkalwar/data/countdown4/test.parquet'\'']' data.train_batch_size=128 data.val_batch_size=128 data.max_prompt_length=512 data.max_response_length=1024 +data.max_length=1536 +data.truncation=error actor_rollout_ref.model.path=Qwen/Qwen2.5-0.5B-Instruct actor_rollout_ref.actor.optim.lr=1e-6 actor_rollout_ref.model.use_remove_padding=True actor_rollout_ref.actor.ppo_mini_batch_size=32 actor_rollout_ref.actor.ppo_micro_batch_size=32 actor_rollout_ref.actor.use_dynamic_bsz=True actor_rollout_ref.actor.ppo_max_token_len_per_gpu=24000 actor_rollout_ref.actor.use_kl_loss=True actor_rollout_ref.actor.kl_loss_coef=0.001 actor_rollout_ref.actor.kl_loss_type=low_var_kl actor_rollout_ref.model.enable_gradient_checkpointing=True actor_rollout_ref.actor.fsdp_config.param_offload=True actor_rollout_ref.actor.fsdp_config.grad_offload=True actor_rollout_ref.actor.fsdp_config.optimizer_offload=True actor_rollout_ref.rollout.tensor_model_parallel_size=1 actor_rollout_ref.rollout.name=vllm actor_rollout_ref.rollout.gpu_memory_utilization=0.6 actor_rollout_ref.rollout.n=5 algorithm.kl_ctrl.kl_coef=0.001 trainer.critic_warmup=0 'trainer.logger=[console,wandb]' trainer.project_name=llm_fine_tuning trainer.experiment_name=AG-Countdown3_Qwen-0.5B_ISFT_LG_N5 +trainer.val_before_train=True trainer.n_gpus_per_node=2 trainer.nnodes=1 trainer.save_freq=-1 trainer.test_freq=10 +trainer.val_only=False trainer.total_epochs=5
++ python3 -m verl.trainer.main_ppo algorithm.adv_estimator=grpo 'data.train_files=['\''/home/dkalwar/data/countdown3/train.parquet'\'']' 'data.val_files=['\''/home/dkalwar/data/countdown3/test.parquet'\'', '\''/home/dkalwar/data/countdown4/test.parquet'\'']' data.train_batch_size=128 data.val_batch_size=128 data.max_prompt_length=512 data.max_response_length=1024 actor_rollout_ref.model.path=Qwen/Qwen2.5-0.5B-Instruct actor_rollout_ref.actor.optim.lr=1e-6 actor_rollout_ref.model.use_remove_padding=True actor_rollout_ref.actor.ppo_mini_batch_size=32 actor_rollout_ref.actor.ppo_micro_batch_size=32 actor_rollout_ref.actor.use_dynamic_bsz=True actor_rollout_ref.actor.ppo_max_token_len_per_gpu=24000 actor_rollout_ref.actor.use_kl_loss=True actor_rollout_ref.actor.kl_loss_coef=0.001 actor_rollout_ref.actor.kl_loss_type=low_var_kl actor_rollout_ref.model.enable_gradient_checkpointing=True actor_rollout_ref.actor.fsdp_config.param_offload=False actor_rollout_ref.actor.fsdp_config.grad_offload=False actor_rollout_ref.actor.fsdp_config.optimizer_offload=False actor_rollout_ref.rollout.tensor_model_parallel_size=1 actor_rollout_ref.rollout.name=vllm actor_rollout_ref.rollout.gpu_memory_utilization=0.6 actor_rollout_ref.rollout.n=5 actor_rollout_ref.ref.fsdp_config.param_offload=True algorithm.kl_ctrl.kl_coef=0.001 trainer.critic_warmup=0 'trainer.logger=[console,wandb]' trainer.project_name=llm_fine_tuning trainer.experiment_name=AG-Countdown3_Qwen-0.5B_GRPO_LG_N5 +trainer.val_before_train=True trainer.n_gpus_per_node=2 trainer.nnodes=1 trainer.save_freq=-1 trainer.test_freq=10 +trainer.val_only=False trainer.total_epochs=5
+train_tiny_zero_isft.sh: line 12: -m: command not found
+/home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+  warnings.warn(
+2025-04-17 19:03:04,771	INFO worker.py:1841 -- Started a local Ray instance.
+[36m(pid=2137884)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+[36m(pid=2137884)[0m   warnings.warn(
+[36m(main_task pid=2137884)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/vllm/connections.py:8: RuntimeWarning: Failed to read commit hash:
+[36m(main_task pid=2137884)[0m No module named 'vllm._version'
+[36m(main_task pid=2137884)[0m   from vllm.version import __version__ as VLLM_VERSION
+[36m(pid=2138233)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+[36m(pid=2138233)[0m   warnings.warn(
+[36m(pid=2138233)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/vllm/connections.py:8: RuntimeWarning: Failed to read commit hash:
+[36m(pid=2138233)[0m No module named 'vllm._version'
+[36m(pid=2138233)[0m   from vllm.version import __version__ as VLLM_VERSION
+[36m(pid=2138468)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/transformers/utils/hub.py:128: FutureWarning: Using `TRANSFORMERS_CACHE` is deprecated and will be removed in v5 of Transformers. Use `HF_HOME` instead.
+[36m(pid=2138468)[0m   warnings.warn(
+[36m(pid=2138468)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/vllm/connections.py:8: RuntimeWarning: Failed to read commit hash:
+[36m(pid=2138468)[0m No module named 'vllm._version'
+[36m(pid=2138468)[0m   from vllm.version import __version__ as VLLM_VERSION
+[36m(WorkerDict pid=2138233)[0m You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+[36m(WorkerDict pid=2138233)[0m Flash Attention 2.0 only supports torch.float16 and torch.bfloat16 dtypes, but the current dype in Qwen2ForCausalLM is torch.float32. You should run training or inference using Automatic Mixed-Precision via the `with torch.autocast(device_type='torch_device'):` decorator, or load the model with the `torch_dtype` argument. Example: `model = AutoModel.from_pretrained("openai/whisper-tiny", attn_implementation="flash_attention_2", torch_dtype=torch.float16)`
+[36m(WorkerDict pid=2138468)[0m You are attempting to use Flash Attention 2.0 with a model not initialized on GPU. Make sure to move the model to GPU after initializing it on CPU with `model.to('cuda')`.
+[36m(WorkerDict pid=2138233)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/xformers/ops/fmha/flash.py:211: FutureWarning: `torch.library.impl_abstract` was renamed to `torch.library.register_fake`. Please use that instead; we will remove `torch.library.impl_abstract` in a future version of PyTorch.
+[36m(WorkerDict pid=2138233)[0m   @torch.library.impl_abstract("xformers_flash::flash_fwd")
+[36m(WorkerDict pid=2138468)[0m Flash Attention 2.0 only supports torch.float16 and torch.bfloat16 dtypes, but the current dype in Qwen2ForCausalLM is torch.float32. You should run training or inference using Automatic Mixed-Precision via the `with torch.autocast(device_type='torch_device'):` decorator, or load the model with the `torch_dtype` argument. Example: `model = AutoModel.from_pretrained("openai/whisper-tiny", attn_implementation="flash_attention_2", torch_dtype=torch.float16)`
+[36m(WorkerDict pid=2138233)[0m   @torch.library.impl_abstract("xformers_flash::flash_bwd")
+[36m(WorkerDict pid=2138233)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:689: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+[36m(WorkerDict pid=2138233)[0m   warnings.warn(
+[36m(WorkerDict pid=2138468)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/xformers/ops/fmha/flash.py:344: FutureWarning: `torch.library.impl_abstract` was renamed to `torch.library.register_fake`. Please use that instead; we will remove `torch.library.impl_abstract` in a future version of PyTorch.[32m [repeated 3x across cluster][0m
+[36m(WorkerDict pid=2138468)[0m   @torch.library.impl_abstract("xformers_flash::flash_fwd")
+[36m(WorkerDict pid=2138468)[0m   @torch.library.impl_abstract("xformers_flash::flash_bwd")
+[36m(main_task pid=2137884)[0m wandb: Using wandb-core as the SDK backend.  Please refer to https://wandb.me/wandb-core for more information.
+[36m(main_task pid=2137884)[0m wandb: Appending key for api.wandb.ai to your netrc file: /home/dkalwar/.netrc
+[36m(main_task pid=2137884)[0m wandb: Currently logged in as: dkalwar (multi-agent-human_comm) to https://api.wandb.ai. Use `wandb login --relogin` to force relogin
+[36m(main_task pid=2137884)[0m wandb: Tracking run with wandb version 0.19.8
+[36m(main_task pid=2137884)[0m wandb: Run data is saved locally in /home/dkalwar/TinyZero/scripts/wandb/run-20250417_190401-muosj5qz
+[36m(main_task pid=2137884)[0m wandb: Run `wandb offline` to turn off syncing.
+[36m(main_task pid=2137884)[0m wandb: Syncing run AG-Countdown3_Qwen-0.5B_GRPO_LG_N5
+[36m(main_task pid=2137884)[0m wandb: ⭐️ View project at https://wandb.ai/multi-agent-human_comm/llm_fine_tuning
+[36m(main_task pid=2137884)[0m wandb: 🚀 View run at https://wandb.ai/multi-agent-human_comm/llm_fine_tuning/runs/muosj5qz
+[36m(WorkerDict pid=2138233)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+[36m(WorkerDict pid=2138233)[0m   with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+[36m(WorkerDict pid=2138468)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/torch/distributed/fsdp/fully_sharded_data_parallel.py:689: FutureWarning: FSDP.state_dict_type() and FSDP.set_state_dict_type() are being deprecated. Please use APIs, get_state_dict() and set_state_dict(), which can support different parallelisms, FSDP1, FSDP2, DDP. API doc: https://pytorch.org/docs/stable/distributed.checkpoint.html#torch.distributed.checkpoint.state_dict.get_state_dict .Tutorial: https://pytorch.org/tutorials/recipes/distributed_checkpoint_recipe.html .
+[36m(WorkerDict pid=2138468)[0m   warnings.warn(
+[36m(main_task pid=2137884)[0m <string>:1: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?
+[36m(WorkerDict pid=2138468)[0m /home/dkalwar/anaconda3/envs/zero/lib/python3.9/site-packages/torch/utils/checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+[36m(WorkerDict pid=2138468)[0m   with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+[36m(main_task pid=2137884)[0m <string>:1: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?
+[36m(main_task pid=2137884)[0m <string>:1: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?
+[36m(main_task pid=2137884)[0m <string>:1: SyntaxWarning: 'int' object is not callable; perhaps you missed a comma?
+slurmstepd: error: *** JOB 25370419 ON scg006 CANCELLED AT 2025-04-18T17:55:48 ***
