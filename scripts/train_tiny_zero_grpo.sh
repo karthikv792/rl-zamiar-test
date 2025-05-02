@@ -51,7 +51,7 @@ python3 -m verl.trainer.main_ppo \
     +trainer.val_only=False \
     +trainer.resume_mode='auto' \
     +trainer.remove_previous_ckpt_in_save=True \
-    +trainer.del_local_ckpt_after_load=True \
+    +trainer.del_local_ckpt_after_load=False \
     trainer.n_gpus_per_node=$N_GPUS \
     trainer.nnodes=1 \
     trainer.save_freq=10 \
