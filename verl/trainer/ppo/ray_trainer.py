@@ -598,6 +598,14 @@ class RayPPOTrainer(object):
         with open(local_latest_wandb_run_id, 'w') as f:
             f.write(self.logger.logger['wandb'].run.id)  # To do change it to wandb run id
 
+        # Sync to S3 if configured
+        if self.config.trainer.s3_checkpoint_dir:
+            result = os.system(f"aws s3 sync {self.config.trainer.default_local_dir} {self.config.trainer.s3_checkpoint_dir}")
+            if result == 0:
+                print(f"Checkpoint sync to S3 initiated for step {self.global_steps}")
+            else:
+                print(f"S3 sync command failed with exit code {result} at step {self.global_steps}")
+
 
 
     def _load_checkpoint(self):

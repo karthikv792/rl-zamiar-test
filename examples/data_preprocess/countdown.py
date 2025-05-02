@@ -68,17 +68,17 @@ Assistant: Let me solve this step by step.
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--local_dir', default='~/data/countdown4')
+    parser.add_argument('--local_dir', default='~/data/countdown')
     parser.add_argument('--hdfs_dir', default=None)
     parser.add_argument('--num_samples', type=int, default=100000)
     parser.add_argument('--num_operands', type=int, default=6)
     parser.add_argument('--max_target', type=int, default=1000)
     parser.add_argument('--min_number', type=int, default=1)
     parser.add_argument('--max_number', type=int, default=100)
-    parser.add_argument('--train_size', type=int, default=30000) #327680
-    parser.add_argument('--test_size', type=int, default=1000)
-    parser.add_argument('--template_type', type=str, default='qwen-instruct') #base
-    parser.add_argument('--data_source', type=str, default='countdown4')
+    parser.add_argument('--train_size', type=int, default=102400) #327680
+    parser.add_argument('--test_size', type=int, default=1024)
+    parser.add_argument('--template_type', type=str, default='base') #base
+    parser.add_argument('--data_source', type=str, default='countdown')
 
     args = parser.parse_args()
 
@@ -92,6 +92,8 @@ if __name__ == '__main__':
         raw_dataset = load_dataset("Durgesh-Kalwar/countdown", "countdown_n4", split='full')
     elif data_source=='countdown3':
         raw_dataset = load_dataset("Durgesh-Kalwar/countdown", "countdown_n3", split='full')
+    else:
+        raw_dataset = load_dataset('Jiayi-Pan/Countdown-Tasks-3to4', split='train')
     # raw_dataset = raw_dataset.rename_column('target_list','nums')
     assert len(raw_dataset) >= TRAIN_SIZE + TEST_SIZE
     train_dataset = raw_dataset.select(range(TRAIN_SIZE))
