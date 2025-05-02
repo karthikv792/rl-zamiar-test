@@ -1,20 +1,20 @@
 set -x
 # export VLLM_ATTENTION_BACKEND=XFORMERS
 
-countdown3_train_path=$HOME/data/countdown/train.parquet
-countdown3_test_path=$HOME/data/countdown/test.parquet
+# countdown3_train_path=$HOME/data/countdown/train.parquet
+# countdown3_test_path=$HOME/data/countdown/test.parquet
 # countdown4_test_path=$HOME/data/countdown4/test.parquet
 
-train_files="['$countdown3_train_path']"
+# train_files="['$countdown3_train_path']"
 # test_files="['$countdown3_test_path', '$countdown4_test_path']"
-test_files="['$countdown3_test_path']"
+# test_files="['$countdown3_test_path']"
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
     +algorithm.use_grpo_simplified=True \
     +algorithm.alpha=0.0 \
-    data.train_files="$train_files" \
-    data.val_files="$test_files" \
+    data.train_files=/root/data/countdown/train.parquet \
+    data.val_files=/root/data/countdown/test.parquet \
     +data.shuffle=True \
     +data.seed=42 \
     data.train_batch_size=256 \
