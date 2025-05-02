@@ -11,7 +11,7 @@ set -x
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    +algorithm.use_grpo_simplified=True \
+    +algorithm.use_grpo_simplified=False \
     +algorithm.alpha=0.0 \
     data.train_files=/root/data/countdown/train.parquet \
     data.val_files=/root/data/countdown/test.parquet \
