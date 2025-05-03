@@ -54,7 +54,7 @@ python3 -m verl.trainer.main_ppo \
     +trainer.del_local_ckpt_after_load=False \
     trainer.n_gpus_per_node=$N_GPUS \
     trainer.nnodes=1 \
-    trainer.save_freq=10 \
+    trainer.save_freq=20 \
     trainer.test_freq=20 \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=/verl_repo/grpo_simplified/checkpoints/$PROJECT_NAME/$EXPERIMENT_NAME/ \
