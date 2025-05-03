@@ -11,8 +11,8 @@ set -x
 
 python3 -m verl.trainer.main_ppo \
     algorithm.adv_estimator=grpo \
-    +algorithm.use_grpo_simplified=True \
-    +algorithm.alpha=1.0 \
+    +algorithm.use_grpo_simplified=$USE_GRPO_SIMPLIFIED \
+    +algorithm.alpha=$GRPO_SIMPLIFIED_ALPHA \
     data.train_files=/root/data/countdown/train.parquet \
     data.val_files=/root/data/countdown/test.parquet \
     +data.shuffle=True \
@@ -27,8 +27,8 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.actor.ppo_mini_batch_size=64 \
     actor_rollout_ref.actor.ppo_micro_batch_size=8 \
     actor_rollout_ref.actor.use_dynamic_bsz=True \
-    actor_rollout_ref.actor.use_kl_loss=False \
-    actor_rollout_ref.actor.kl_loss_coef=0.0 \
+    actor_rollout_ref.actor.use_kl_loss=$USE_KL_LOSS \
+    actor_rollout_ref.actor.kl_loss_coef=$KL_LOSS_COEFFICIENT \
     actor_rollout_ref.actor.kl_loss_type=low_var_kl \
     actor_rollout_ref.model.enable_gradient_checkpointing=True \
     actor_rollout_ref.actor.fsdp_config.param_offload=False \
@@ -41,7 +41,7 @@ python3 -m verl.trainer.main_ppo \
     actor_rollout_ref.rollout.n=5 \
     actor_rollout_ref.ref.log_prob_micro_batch_size=4 \
     actor_rollout_ref.ref.fsdp_config.param_offload=True \
-    algorithm.kl_ctrl.kl_coef=0.0 \
+    algorithm.kl_ctrl.kl_coef=$KL_CTRL_COEFFICIENT \
     trainer.critic_warmup=0 \
     trainer.logger=['console','wandb'] \
     trainer.project_name=$PROJECT_NAME \
@@ -54,7 +54,7 @@ python3 -m verl.trainer.main_ppo \
     +trainer.del_local_ckpt_after_load=False \
     trainer.n_gpus_per_node=$N_GPUS \
     trainer.nnodes=1 \
-    trainer.save_freq=20 \
+    trainer.save_freq=15 \
     trainer.test_freq=20 \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=/verl_repo/grpo_simplified/checkpoints/$PROJECT_NAME/$EXPERIMENT_NAME/ \
