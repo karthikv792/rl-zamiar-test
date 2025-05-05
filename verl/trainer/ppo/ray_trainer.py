@@ -600,7 +600,7 @@ class RayPPOTrainer(object):
 
         # Sync to S3 if configured
         if self.config.trainer.s3_checkpoint_dir:
-            result = os.system(f"aws s3 sync --delete {self.config.trainer.default_local_dir} {self.config.trainer.s3_checkpoint_dir}")
+            result = os.system(f"aws s3 sync {self.config.trainer.default_local_dir} {self.config.trainer.s3_checkpoint_dir}")
             if result == 0:
                 print(f"Checkpoint sync to S3 initiated for step {self.global_steps}")
             else:
