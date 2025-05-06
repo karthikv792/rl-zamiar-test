@@ -59,4 +59,4 @@ python3 -m verl.trainer.main_ppo \
     trainer.default_hdfs_dir=null \
     trainer.default_local_dir=/verl_repo/grpo_simplified/checkpoints/$PROJECT_NAME/$EXPERIMENT_NAME/ \
     +trainer.s3_checkpoint_dir=s3://karthik-s3-yochan/grpo_simplified/checkpoints/$PROJECT_NAME/$EXPERIMENT_NAME/ \
-    trainer.total_epochs=7 $@
+    trainer.total_epochs=8 $@
