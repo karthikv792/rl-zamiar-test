@@ -16,7 +16,7 @@ python3 -m verl.trainer.main_ppo \
     data.train_files=/root/data/countdown/train.parquet \
     data.val_files=/root/data/countdown/test.parquet \
     +data.shuffle=True \
-    +data.seed=42 \
+    +data.seed=$SEED \
     data.train_batch_size=256 \
     data.val_batch_size=1024 \
     data.max_prompt_length=256 \
