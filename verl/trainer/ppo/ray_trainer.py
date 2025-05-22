@@ -480,10 +480,10 @@ class RayPPOTrainer(object):
             metric_dict[f'val/test_score/{data_source}'] = np.mean(rewards)
 
         for idx, (out_txt, score) in enumerate(zip(output_texts,scores)):
-            if score==1.0:
+            if score>=1.0:
                 num_pos+=1
                 avg_pos_len+=len(self.tokenizer.encode(out_txt, add_special_tokens=False))
-            elif score==0.0:
+            elif score<0.2:
                 num_neg+=1.0
                 avg_neg_len+=len(self.tokenizer.encode(out_txt, add_special_tokens=False))
             else:
