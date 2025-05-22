@@ -49,7 +49,7 @@ python3 -m verl.trainer.main_ppo \
     trainer.experiment_name=$EXPERIMENT_NAME \
     trainer.default_hdfs_dir=null \
     +trainer.val_before_train=True \
-    +trainer.val_only=False \
+    +trainer.val_only=True \
     +trainer.resume_mode='auto' \
     +trainer.remove_previous_ckpt_in_save=False \
     +trainer.del_local_ckpt_after_load=False \

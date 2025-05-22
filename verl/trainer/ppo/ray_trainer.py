@@ -37,6 +37,7 @@ from verl.utils.seqlen_balancing import get_seqlen_balanced_partitions, log_seql
 from verl.utils.checkpoint.checkpoint_manager import find_latest_ckpt_path
 from torch.utils.data import RandomSampler, SequentialSampler
 from torchdata.stateful_dataloader import StatefulDataLoader
+from verl.latest_chk_sync import get_specific_checkpoint
 
 WorkerType = Type[Worker]
 
@@ -422,6 +423,10 @@ class RayPPOTrainer(object):
     def _validate(self):
         reward_tensor_lst = []
         data_source_lst = []
+        num_pos = 0
+        num_neg = 0 
+        avg_pos_len = 0
+        avg_neg_len = 0
         for test_data in self.val_dataloader:
             test_batch = DataProto.from_single_dict(test_data)
             # test_batch = test_batch.to('cuda')
@@ -446,11 +451,16 @@ class RayPPOTrainer(object):
             test_output_gen_batch = unpad_dataproto(test_output_gen_batch_padded, pad_size=pad_size)
             print('validation generation end')
 
+            # Store generated outputs
+            output_ids = test_output_gen_batch.batch["responses"]
+            output_texts = [self.tokenizer.decode(ids, skip_special_tokens=True) for ids in output_ids]
+
             test_batch = test_batch.union(test_output_gen_batch)
 
             # evaluate using reward_function
             # for certain reward function (e.g. sandbox), the generation can overlap with reward
             reward_tensor = self.val_reward_fn(test_batch)
+            scores = reward_tensor.sum(-1).cpu().tolist()
 
             reward_tensor_lst.append(reward_tensor)
             data_source_lst.append(test_batch.non_tensor_batch.get('data_source', ['unknown'] * reward_tensor.shape[0]))
@@ -469,7 +479,18 @@ class RayPPOTrainer(object):
         for data_source, rewards in data_source_reward.items():
             metric_dict[f'val/test_score/{data_source}'] = np.mean(rewards)
 
-        return metric_dict
+        for idx, (out_txt, score) in enumerate(zip(output_texts,scores)):
+            if score==1.0:
+                num_pos+=1
+                avg_pos_len+=len(self.tokenizer.encode(out_txt, add_special_tokens=False))
+            elif score==0.0:
+                num_neg+=1.0
+                avg_neg_len+=len(self.tokenizer.encode(out_txt, add_special_tokens=False))
+            else:
+                raise ValueError(f"Invalid score encountered: {score}")
+        return metric_dict,[self.global_steps, num_pos, num_neg, avg_pos_len/num_pos, avg_neg_len/num_neg]
+
+        # return metric_dict
 
     def init_workers(self):
         """Init resource pool and worker group"""
@@ -608,7 +629,7 @@ class RayPPOTrainer(object):
 
 
 
-    def _load_checkpoint(self):
+    def _load_checkpoint(self,step_number=None):
         self.wandb_run_id = None
         # if self.config.trainer.resume_mode == 'disable':
         #     return 0
@@ -622,6 +643,12 @@ class RayPPOTrainer(object):
                 working_dir = os.getcwd()
                 xc = os.path.join(working_dir, checkpoint_folder)
             global_step_folder = find_latest_ckpt_path(checkpoint_folder)  # None if no latest
+            if step_number is not None:
+                import re
+                global_step_folder = re.sub(r"global_step_\d+", f"global_step_{step_number}", global_step_folder)
+                get_specific_checkpoint(self.config.trainer.s3_checkpoint_dir, self.config.trainer.default_local_dir, step_number)
+            print("---------------------------------------------------------")
+            print("global_step_folder:",global_step_folder)
 
         # find global_step_folder
         if self.config.trainer.resume_mode == 'auto':
@@ -691,27 +718,54 @@ class RayPPOTrainer(object):
         """
         from verl.utils.tracking import Tracking
         from omegaconf import OmegaConf
+        import csv
+        
+        # Define the file name
+        file_name = self.config.trainer.default_local_dir + "_response_statistics.csv"
 
+        # Define the column headers
+        headers = ["global_steps", "num_positive_responses", "num_negative_responses",
+                "avg_positive_token_len", "avg_negative_token_len"]
 
-        self.global_steps = 0
+        # Open the file and write data
+        with open(file_name, mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(headers)  # Write the header row
+        for ttt in range(24):
 
-        # load checkpoint before doing anything
-        self._load_checkpoint()
+            # self.global_steps = 0
+            self.global_steps = int((ttt+1)*10)
+            print("global_steps:",self.global_steps)
 
-        self.logger = Tracking(project_name=self.config.trainer.project_name,
-                          experiment_name=self.config.trainer.experiment_name,
-                          default_backend=self.config.trainer.logger,
-                          config=OmegaConf.to_container(self.config, resolve=True),
-                          wandb_run_id = self.wandb_run_id)
+            # load checkpoint before doing anything
+            self._load_checkpoint(self.global_steps)
+            # self._load_checkpoint()
 
-        # perform validation before training
-        # currently, we only support validation using the reward_function.
-        if self.val_reward_fn is not None and self.config.trainer.get('val_before_train', True):
-            val_metrics = self._validate()
-            pprint(f'Initial validation metrics: {val_metrics}')
-            self.logger.log(data=val_metrics, step=self.global_steps)
-            if self.config.trainer.get('val_only', False):
-                return
+            # self.logger = Tracking(project_name=self.config.trainer.project_name,
+            #                     experiment_name=self.config.trainer.experiment_name,
+            #                     default_backend=self.config.trainer.logger,
+            #                     config=OmegaConf.to_container(self.config, resolve=True),
+            #                     wandb_run_id = self.wandb_run_id)
+
+            # perform validation before training
+            # currently, we only support validation using the reward_function.
+            if self.val_reward_fn is not None and self.config.trainer.get('val_before_train', True):
+                val_metrics,info = self._validate()
+                # val_metrics = self._validate()
+                pprint(f'Initial validation metrics: {val_metrics}')
+                # self.logger.log(data=val_metrics, step=self.global_steps)
+                if self.config.trainer.get('val_only', False):
+                    with open(file_name, mode='a', newline='') as file:
+                        writer = csv.writer(file)
+                        writer.writerow(info)
+        # Sync to S3 if configured
+        if self.config.trainer.s3_checkpoint_dir:
+            result = os.system(f"aws s3 sync {self.config.trainer.default_local_dir} {self.config.trainer.s3_checkpoint_dir}")
+            if result == 0:
+                print(f"Checkpoint sync to S3 initiated for step {self.global_steps}")
+            else:
+                print(f"S3 sync command failed with exit code {result} at step {self.global_steps}")
+        return
 
         # we start from step 1
         self.global_steps += 1

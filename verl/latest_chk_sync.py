@@ -64,6 +64,22 @@ def sync_s3_to_local(s3_path, local_path):
     except subprocess.CalledProcessError as e:
         print(f"Error syncing S3 directory: {str(e)}")
 
+def get_specific_checkpoint(s3_checkpoint_dir,local_checkpoint_dir,iteration):
+    """
+    Sync the specific checkpoint from S3 to local directory.
+    """
+    # Construct the S3 path for the specific checkpoint
+    s3_checkpoint_path = os.path.join(s3_checkpoint_dir, "global_step_{}".format(iteration))
+    
+    # Check if the S3 path exists
+    if check_s3_path_exists(s3_checkpoint_path):
+        print(f"S3 path exists: {s3_checkpoint_path}")
+        
+        # Sync the checkpoint folder to the local directory
+        sync_s3_to_local(s3_checkpoint_path, os.path.join(local_checkpoint_dir, "global_step_{}".format(iteration)))
+    else:
+        print(f"S3 path does not exist: {s3_checkpoint_path}")
+
 
 if __name__ == "__main__":
     # Parse command-line arguments
