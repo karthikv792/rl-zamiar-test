@@ -1,6 +1,6 @@
 ## Installation Instruction
 ```bash
-conda install -c -forge cudatoolkit-dev -y
+conda install -c conda-forge cudatoolkit-dev -y
 conda create -n isft python==3.9
 conda activate isft
 pip3 install torch==2.4.0 --index-url https://download.pytorch.org/whl/cu124
