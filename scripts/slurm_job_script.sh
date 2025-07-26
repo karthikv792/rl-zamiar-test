@@ -10,7 +10,7 @@
 #SBATCH --error=isft-%j.err
 eval "$(conda shell.bash hook)"
 conda activate zero
-cd /home/dkalwar/TinyZero/scripts
+cd /add/path/to/files
 bash train_tiny_zero_isft.sh &
 bash train_tiny_zero_grpo.sh &
 wait
