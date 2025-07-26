@@ -1,6 +1,6 @@
 python3 -m verl.trainer.main_ppo \
-    data.train_files=/scratch/dkalwar/data/countdown/train.parquet \
-    data.val_files=/scratch/dkalwar/data/countdown//test.parquet \
+    data.train_files=/scratch/data/countdown/train.parquet \
+    data.val_files=/scratch/data/countdown//test.parquet \
     data.train_batch_size=128 \
     data.val_batch_size=1312 \
     data.max_prompt_length=256 \
